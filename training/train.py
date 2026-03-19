@@ -24,3 +24,6 @@ for epoch in range(config.epochs):
     for batch in loader:
         loss = trainer.train_step(batch)
         print("Loss:", loss)
+
+
+torch.save(model.state_dict(),"checkpoints/model.pt")
