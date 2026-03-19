@@ -1,0 +1,7 @@
+{
+  "typeCheckingMode": "off",
+  "reportMissingImports": true,
+  "reportUnusedVariable": "warning",
+  "venvPath": ".",
+  "autoImportCompletions": true
+}
