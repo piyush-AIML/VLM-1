@@ -1,0 +1,22 @@
+{"time":"2026-03-22T14:35:43.607893127Z","level":"INFO","msg":"wandb-core"}
+{"time":"2026-03-22T14:35:43.61356004Z","level":"INFO","msg":"stream: starting","core version":"0.25.1"}
+{"time":"2026-03-22T14:35:44.348093871Z","level":"INFO","msg":"stream: created new stream","id":"cus3s2jx"}
+{"time":"2026-03-22T14:35:44.348816611Z","level":"INFO","msg":"handler: started"}
+{"time":"2026-03-22T14:35:44.352252398Z","level":"INFO","msg":"stream: started"}
+{"time":"2026-03-22T14:35:44.352293565Z","level":"INFO","msg":"writer: started","stream_id":"cus3s2jx"}
+{"time":"2026-03-22T14:35:44.352342414Z","level":"INFO","msg":"sender: started"}
+{"time":"2026-03-22T14:35:45.029134104Z","level":"INFO","msg":"filestream: sending request","total_files":1,"console_offset":0,"console_lines":1}
+{"time":"2026-03-22T14:35:45.630063246Z","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-03-22T14:36:00.029778415Z","level":"INFO","msg":"filestream: sending request","total_files":1,"events_offset":0,"events_lines":2,"uploaded_len":2}
+{"time":"2026-03-22T14:36:00.434639398Z","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-03-22T14:36:15.030094535Z","level":"INFO","msg":"filestream: sending request","total_files":2,"events_offset":2,"events_lines":2,"console_offset":1,"console_lines":7}
+{"time":"2026-03-22T14:36:15.395237041Z","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-03-22T14:36:29.304684847Z","level":"INFO","msg":"filestream: sending request","total_files":2,"events_offset":4,"events_lines":2,"console_offset":8,"console_lines":26}
+{"time":"2026-03-22T14:36:29.76868626Z","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-03-22T14:36:38.298555492Z","level":"INFO","msg":"stream: closing"}
+{"time":"2026-03-22T14:36:40.217000681Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-03-22T14:36:40.217934425Z","level":"INFO","msg":"filestream: sending request","total_files":1,"uploaded_len":3,"complete":true,"exit_code":1}
+{"time":"2026-03-22T14:36:40.619678023Z","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-03-22T14:36:40.622085531Z","level":"INFO","msg":"handler: closed"}
+{"time":"2026-03-22T14:36:40.626521768Z","level":"INFO","msg":"sender: closed"}
+{"time":"2026-03-22T14:36:40.626787207Z","level":"INFO","msg":"stream: closed"}

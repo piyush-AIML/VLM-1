@@ -1,8 +1,10 @@
 import torch
 from PIL import Image
 from transformers import AutoTokenizer, ViTImageProcessor
-from models.vlm_model import VLMModel
+
 from configs.config import Config
+from models.vlm_model import VLMModel
+
 
 class VLMInference:
     def __init__(self, checkpoint_path=None):
@@ -14,19 +16,27 @@ class VLMInference:
         self.model.eval()
 
         if checkpoint_path:
-            self.model.load_state_dict(torch.load(checkpoint_path))
+            try:
+                state = torch.load(
+                    checkpoint_path,
+                    map_location=self.device,
+                    weights_only=True,
+                )
+            except TypeError:
+                state = torch.load(checkpoint_path, map_location=self.device)
+            self.model.load_state_dict(state)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.llm_model)
         self.processor = ViTImageProcessor.from_pretrained(self.config.vit_model)
 
     def generate(self, image_path, prompt):
-        image = Image.open(image_path).convert("RGB")
+        with Image.open(image_path) as im:
+            image = im.convert("RGB")
 
         pixel_values = self.processor(images=image, return_tensors="pt")[
             "pixel_values"
         ].to(self.device)
 
-        # ---- TEXT ----
         chat = [
             {"role": "system", "content": "Answer truthfully"},
             {"role": "user", "content": prompt},
@@ -35,23 +45,13 @@ class VLMInference:
         input_ids = self.tokenizer.apply_chat_template(
             chat, return_tensors="pt"
         ).to(self.device)
+        attention_mask = torch.ones_like(input_ids, dtype=torch.long, device=self.device)
 
         with torch.no_grad():
-            # ---- IMAGE ----
-            vit_out = self.model.vit(pixel_values=pixel_values)
-            image_embeds = vit_out.last_hidden_state
-
-            q_tokens = self.model.qformer(image_embeds)
-            image_tokens = self.model.proj(q_tokens)
-
-            # ---- TEXT ----
-            text_embeds = self.model.llm.get_input_embeddings()(input_ids)
-
-            inputs_embeds = torch.cat([image_tokens, text_embeds], dim=1)
-
-            # ---- GENERATE ----
-            outputs = self.model.llm.generate(
-                inputs_embeds=inputs_embeds,
+            outputs = self.model.generate(
+                pixel_values,
+                input_ids,
+                attention_mask,
                 max_new_tokens=100,
                 do_sample=True,
                 temperature=0.7,

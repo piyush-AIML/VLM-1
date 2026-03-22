@@ -1,0 +1,65 @@
+INFO:root:🔄 Loading datasets...
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/revision/13b7986f8266a3cadee8a6eed1e05c438d0fe695 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://huggingface.co/api/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/tree/13b7986f8266a3cadee8a6eed1e05c438d0fe695?recursive=false&expand=false "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/13b7986f8266a3cadee8a6eed1e05c438d0fe695/README.md "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/nvidia/Llama-Nemotron-VLM-Dataset-v1.py "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/.huggingface.yaml "HTTP/1.1 404 Not Found"
+INFO:httpx:HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=nvidia/Llama-Nemotron-VLM-Dataset-v1 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: HEAD https://huggingface.co/datasets/nvidia/Llama-Nemotron-VLM-Dataset-v1/resolve/13b7986f8266a3cadee8a6eed1e05c438d0fe695/dataset_infos.json "HTTP/1.1 404 Not Found"
+INFO:root:✅ Dataset loaded: 20000 samples
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/c/PS/project/project2/training/train.py", line 24, in <module>
+    dataset = VLMDataset()
+              ^^^^^^^^^^^^
+  File "/mnt/c/PS/project/project2/data/dataset.py", line 49, in __init__
+    self.samples = self._build_samples(ds)
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/PS/project/project2/data/dataset.py", line 82, in _build_samples
+    raise RuntimeError("❌ No valid samples found!")
+RuntimeError: ❌ No valid samples found!

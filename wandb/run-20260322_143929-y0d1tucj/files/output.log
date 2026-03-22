@@ -1,0 +1,39 @@
+INFO:root:🔄 Loading datasets...
+INFO:root:Raw dataset size: 20000
+DEBUG SAMPLE: {'id': '53d57c36-0c66-422b-9809-3d609906383b', 'image': '4233421940e0eaf7.jpg', 'conversations': [{'from': 'human', 'value': 'What do you see happening in this image?\n<image>'}, {'from': 'gpt', 'value': 'The image captures a striking wooden sculpture, standing tall against the backdrop of a clear sky. The sculpture, carved from a single piece of wood, is a testament to the artistry of its creator. It features a series of faces and figures, each one unique and distinct, stacked one on top of the other. The faces and figures are arranged in a vertical line, creating a sense of depth and dimension. The sculpture is positioned in a park, surrounded by the tranquility of nature. The black and white color scheme adds a timeless quality to the image, highlighting the intricate details of the sculpture and the serene park setting.'}], 'metadata': None}
+DEBUG SAMPLE: {'id': 'ea199a3d-2eaf-49e8-920f-d9dfcb625747', 'image': '49ec94f0d878f09a.jpg', 'conversations': [{'from': 'human', 'value': '<image>\nWhat is this photo about?'}, {'from': 'gpt', 'value': 'The image presents a close-up view of a plate of food. The plate is filled with a variety of items, including a piece of bread, a salad, and a piece of meat. The bread appears to be toasted, with a golden-brown crust. The salad is a mix of greens, including lettuce and possibly spinach, along with shredded carrots and other vegetables. The meat, which is the largest item on the plate, has a dark, crispy exterior, suggesting it might be grilled or roasted. The colors in the image are vibrant, with the greens of the salad contrasting against the warm tones of the bread and meat. The arrangement of the food items on the plate suggests a balanced meal, with a mix of carbohydrates, proteins, and vegetables.'}], 'metadata': None}
+DEBUG SAMPLE: {'id': '592a6398-41f4-4764-9740-66078f5f362b', 'image': '2b52c382fa576ca9.jpg', 'conversations': [{'from': 'human', 'value': '<image>\nWhat do you think is going on in this snapshot?'}, {'from': 'gpt', 'value': "In the image, a man with a beard is captured in a moment of quiet contemplation. He is standing in a room that is bathed in a warm, red light, creating an atmosphere of intimacy and solitude. The man is dressed in a black shirt, which contrasts with the red background, and a black strap crosses his chest, adding an element of intrigue to his appearance.\n\nThe man is positioned in front of a mirror, which is the main source of light in the room. The mirror reflects his image, adding depth to the scene and creating a sense of space. The man's gaze is directed towards the camera, suggesting that he is aware of being photographed.\n\nThe image is taken from a low angle, looking up at the man. This perspective enhances his stature and gives him a commanding presence. The low angle shot also emphasizes the red light and the mirror, drawing attention to these elements and creating a visually striking composition.\n\nOverall, this image tells a story of a man in a moment of introspection, captured in a setting that is both visually striking and emotionally evocative."}], 'metadata': None}
+INFO:root:Valid: 19994, Invalid: 6
+INFO:root:✅ Final usable samples: 19994
+Loading weights: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████| 198/198 [00:00<00:00, 2488.40it/s]
+Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████| 290/290 [00:00<00:00, 951.28it/s]
+INFO:root:Trainable params: 86,877,325 / 667,299,341 (13.02%)
+
+🚀 Epoch 1/8
+Training:   0%|                                                                                                                      | 0/8997 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/c/PS/project/project2/training/train.py", line 120, in <module>
+    loss = trainer.train_step(batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/PS/project/project2/training/trainer.py", line 53, in train_step
+    outputs = self.model(**batch)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/home/lenovo/miniconda3/envs/ML/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/lenovo/miniconda3/envs/ML/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1882, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/home/lenovo/miniconda3/envs/ML/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1830, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/PS/project/project2/models/vlm_model.py", line 131, in forward
+    if torch.isnan(inputs_embeds).any():
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: device-side assert triggered
+Search for `cudaErrorAssert' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.

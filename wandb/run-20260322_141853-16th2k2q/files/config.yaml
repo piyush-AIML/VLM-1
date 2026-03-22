@@ -1,0 +1,66 @@
+_wandb:
+    value:
+        cli_version: 0.25.1
+        e:
+            mabaa3dmox9zbl67o389jmqbbbxmf7zm:
+                cpu_count: 6
+                cpu_count_logical: 12
+                cudaVersion: "13.0"
+                disk:
+                    /:
+                        total: "1081101176832"
+                        used: "30514823168"
+                email: piyush.ghosal.ai@gmail.com
+                executable: /home/lenovo/miniconda3/envs/ML/bin/python
+                git:
+                    commit: 0d4e1f224d91f9f6e8afcd86d171bb2bde938003
+                    remote: https://github.com/piyush-AIML/VLM-1.git
+                gpu: NVIDIA GeForce RTX 3050 6GB Laptop GPU
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ampere
+                      memoryTotal: "6442450944"
+                      name: NVIDIA GeForce RTX 3050 6GB Laptop GPU
+                      uuid: GPU-d366131e-c07b-2b66-6d34-4062ac5690c6
+                host: LAPTOP-QOS9IQHP
+                memory:
+                    total: "8217903104"
+                os: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+                program: -m training.train
+                python: CPython 3.11.14
+                root: /mnt/c/PS/project/project2
+                startedAt: "2026-03-22T14:18:53.126314Z"
+                writerId: mabaa3dmox9zbl67o389jmqbbbxmf7zm
+        m: []
+        python_version: 3.11.14
+        t:
+            "1":
+                - 1
+                - 5
+                - 11
+                - 41
+                - 49
+                - 51
+                - 53
+                - 71
+                - 98
+                - 105
+            "2":
+                - 1
+                - 5
+                - 11
+                - 41
+                - 49
+                - 51
+                - 53
+                - 71
+                - 98
+                - 105
+            "3":
+                - 13
+                - 16
+            "4": 3.11.14
+            "5": 0.25.1
+            "6": 5.3.0
+            "12": 0.25.1
+            "13": linux-x86_64
