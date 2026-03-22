@@ -4,8 +4,8 @@ from PIL import Image
 
 
 class VLMDataset(Dataset):
-    def __init__(self, max_samples=1000):
-        splits = ["vqa_1", "vqa_2", "captioning_1"]
+    def __init__(self, max_samples=20000):
+        splits = ["vqa_1", "vqa_2", "captioning_1","ocr_1","ocr_2","ocr_3","ocr_4"]
 
         datasets_list = [
             load_dataset(
@@ -19,7 +19,7 @@ class VLMDataset(Dataset):
         self.ds = concatenate_datasets(datasets_list)
 
         # limit dataset size (important for your GPU)
-        self.ds = self.ds.select(range(max_samples))
+        self.ds = self.ds.shuffle(seed=42).select(range(max_samples))
 
     def __len__(self):
         return len(self.ds)
