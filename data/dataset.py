@@ -109,7 +109,10 @@ class VLMDataset(Dataset):
         for idx, item in enumerate(ds):
 
             if idx < 3:
-                logging.debug("sample item keys=%s", list(item.keys()) if hasattr(item, "keys") else type(item))
+                logging.debug(
+                    "sample item keys=%s",
+                    list(item.keys()) if hasattr(item, "keys") else type(item),
+                )
 
             img, inp, tgt = self._extract_sample(item)
 
