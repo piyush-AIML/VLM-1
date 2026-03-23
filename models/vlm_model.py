@@ -186,7 +186,9 @@ class VLMModel(nn.Module):
     # 🤖 Generation
     # ----------------------------
     @torch.no_grad()
-    def generate(self, pixel_values, input_ids, attention_mask, max_new_tokens=50, **gen_kwargs):
+    def generate(
+        self, pixel_values, input_ids, attention_mask, max_new_tokens=50, **gen_kwargs
+    ):
         image_embeds = self.vit(pixel_values=pixel_values).last_hidden_state
 
         q_tokens = self.qformer(image_embeds)

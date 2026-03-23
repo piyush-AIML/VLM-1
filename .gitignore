@@ -1,0 +1,14 @@
+# Python bytecode (the .pyc files)
+__pycache__/
+*.pyc
+
+# Large Data & Datasets (don't push GBs of data to GitHub!)
+data_cache/
+checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables (security)
+.env
