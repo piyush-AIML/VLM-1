@@ -1,9 +1,7 @@
-from datasets import load_dataset
+import configs.config
+import data.collator
+import data.dataset
 
-
-split=["ocr_1","ocr_2","ocr_3","ocr_4","ocr_5","ocr_6"]
-
-ds=load_dataset("nvidia/Llama-Nemotron-VLM-Dataset-v1")
-print(ds)
-
-
+config = configs.config.Config()
+d = data.dataset.VLMDataset()
+c = data.collator.VLMCollator(config)

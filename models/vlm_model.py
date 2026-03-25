@@ -7,57 +7,50 @@ from transformers import AutoModelForCausalLM, ViTModel
 
 from .qformer import QFormer
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class VLMModel(nn.Module):
     def __init__(self, config):
         super().__init__()
-
         self.config = config
 
-        # ----------------------------
-        # 🖼️ Vision Encoder
-        # ----------------------------
+        # =========================================================
+        # 🖼️ VISION ENCODER (FROZEN)
+        # =========================================================
         self.vit = ViTModel.from_pretrained(config.vit_model)
         self.vision_dim = self.vit.config.hidden_size
 
         for p in self.vit.parameters():
             p.requires_grad = False
 
-        # ----------------------------
-        # 🧠 Q-Former
-        # ----------------------------
+        # =========================================================
+        # 🧠 Q-FORMER
+        # =========================================================
         self.qformer = QFormer(
             dim=self.vision_dim,
             num_queries=config.num_query_tokens,
             layers=config.qformer_layers,
         )
 
-        nn.init.normal_(self.qformer.query_tokens, std=0.02)
+        # =========================================================
+        # 🧠 LLM (LoRA)
+        # =========================================================
+        use_fp16 = config.use_fp16 and torch.cuda.is_available()
 
-        # ----------------------------
-        # 🧠 LLM (fp16 only on CUDA; CPU + fp16 weights breaks many ops / dtypes)
-        # ----------------------------
-        _llm_half = bool(config.use_fp16 and torch.cuda.is_available())
         self.llm = AutoModelForCausalLM.from_pretrained(
             config.llm_model,
-            torch_dtype=torch.float16 if _llm_half else torch.float32,
+            torch_dtype=torch.float16 if use_fp16 else torch.float32,
         )
 
-        # 🔥 FIX: pad_token_id safety
         if self.llm.config.pad_token_id is None:
-            self.llm.config.pad_token_id = 0
+            self.llm.config.pad_token_id = self.llm.config.eos_token_id or 0
 
-        # ----------------------------
-        # 🔥 LoRA
-        # ----------------------------
-        target_modules = config.lora_targets or ["q_proj", "v_proj"]
-
+        # 🔥 LoRA config
         lora_config = LoraConfig(
             r=config.lora_r,
             lora_alpha=config.lora_alpha,
-            target_modules=target_modules,
+            target_modules=config.lora_targets or ["q_proj", "v_proj"],
             lora_dropout=config.lora_dropout,
             bias="none",
             task_type="CAUSAL_LM",
@@ -70,103 +63,112 @@ class VLMModel(nn.Module):
 
         self.llm_dim = self.llm.config.hidden_size
 
-        # ----------------------------
-        # 🔗 Projection
-        # ----------------------------
+        # =========================================================
+        # 🔗 PROJECTION (VISION → LLM SPACE)
+        # =========================================================
         self.proj = nn.Linear(self.vision_dim, self.llm_dim)
         self.image_norm = nn.LayerNorm(self.llm_dim)
-        self.image_scale = nn.Parameter(torch.tensor(0.1))
+
+        # 🔥 learnable scaling
+        self.image_scale = nn.Parameter(torch.ones(1) * 0.1)
+
+        # 🔥 fusion norm (critical)
+        self.fusion_norm = nn.LayerNorm(self.llm_dim)
 
         self._log_trainable_params()
 
-    # ----------------------------
-    # 📊 Trainable Params
-    # ----------------------------
+    # =========================================================
+    # 📊 PARAM STATS
+    # =========================================================
     def _log_trainable_params(self):
         total = sum(p.numel() for p in self.parameters())
         trainable = sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-        logging.info(
-            f"Trainable params: {trainable:,} / {total:,} "
-            f"({100 * trainable / total:.2f}%)"
+        logger.info(
+            f"Trainable params: {trainable:,}/{total:,} "
+            f"({100*trainable/total:.2f}%)"
         )
 
-    # ----------------------------
-    # 🚀 Forward (FINAL FIXED)
-    # ----------------------------
+    # =========================================================
+    # 🚀 FORWARD (TRAINING)
+    # =========================================================
     def forward(self, pixel_values, input_ids, attention_mask, labels):
+        device = input_ids.device
         B = input_ids.size(0)
 
         # ----------------------------
-        # 🖼️ Vision
+        # 🖼️ Vision → embeddings
         # ----------------------------
         with torch.no_grad():
-            image_embeds = self.vit(pixel_values=pixel_values).last_hidden_state
+            image_embeds = self.vit(
+                pixel_values=pixel_values
+            ).last_hidden_state  # (B, N, D)
 
         # ----------------------------
         # 🧠 Q-Former
         # ----------------------------
-        q_tokens = self.qformer(image_embeds)
+        q_tokens = self.qformer(image_embeds)  # (B, Q, D)
 
         # ----------------------------
-        # 🔗 Projection
+        # 🔗 Project to LLM space
         # ----------------------------
         image_tokens = self.proj(q_tokens)
         image_tokens = self.image_norm(image_tokens)
         image_tokens = image_tokens * self.image_scale
 
         # ----------------------------
-        # 🔥 FIX 1: CLEAN TARGET IDS
+        # 🔤 Prepare text (teacher forcing)
         # ----------------------------
         pad_id = self.llm.config.pad_token_id
+
         target_ids = labels.clone()
+        target_ids[target_ids == -100] = pad_id
 
-        target_ids[target_ids == -100] = pad_id  # FIXED
-
-        # ----------------------------
-        # 🔥 FIX 2: COMBINE TEXT
-        # ----------------------------
         combined_ids = torch.cat([input_ids, target_ids], dim=1)
 
         # ----------------------------
-        # 🔥 FIX 3: LABEL MASKING
+        # 🔤 Correct attention mask
+        # ----------------------------
+        text_mask = (combined_ids != pad_id).long()
+
+        # ----------------------------
+        # 🎯 Labels (mask input part)
         # ----------------------------
         new_labels = combined_ids.clone()
         input_len = input_ids.size(1)
         new_labels[:, :input_len] = -100
 
         # ----------------------------
-        # 🧠 Text embeddings
+        # 🧠 Get embeddings
         # ----------------------------
         text_embeds = self.llm.get_input_embeddings()(combined_ids)
         image_tokens = image_tokens.to(text_embeds.dtype)
 
         # ----------------------------
-        # 🔗 Combine image + text
+        # 🔗 Fusion (image prefix)
         # ----------------------------
         inputs_embeds = torch.cat([image_tokens, text_embeds], dim=1)
+        inputs_embeds = self.fusion_norm(inputs_embeds)
 
         # ----------------------------
-        # 🎯 Attention mask
+        # 🎯 Final attention mask
         # ----------------------------
-        text_mask = torch.ones_like(combined_ids)
-
         image_mask = torch.ones(
             B,
             image_tokens.size(1),
-            device=input_ids.device,
+            device=device,
             dtype=text_mask.dtype,
         )
 
         attention_mask = torch.cat([image_mask, text_mask], dim=1)
 
         # ----------------------------
-        # 🎯 Labels
+        # 🎯 Final labels
         # ----------------------------
         image_labels = torch.full(
             (B, image_tokens.size(1)),
             -100,
-            device=input_ids.device,
+            device=device,
         )
 
         labels = torch.cat([image_labels, new_labels], dim=1)
@@ -182,15 +184,22 @@ class VLMModel(nn.Module):
 
         return outputs
 
-    # ----------------------------
-    # 🤖 Generation
-    # ----------------------------
+    # =========================================================
+    # 🤖 GENERATION
+    # =========================================================
     @torch.no_grad()
     def generate(
-        self, pixel_values, input_ids, attention_mask, max_new_tokens=50, **gen_kwargs
+        self,
+        pixel_values,
+        input_ids,
+        attention_mask,
+        max_new_tokens=50,
+        **gen_kwargs,
     ):
-        image_embeds = self.vit(pixel_values=pixel_values).last_hidden_state
+        device = input_ids.device
 
+        # Vision
+        image_embeds = self.vit(pixel_values=pixel_values).last_hidden_state
         q_tokens = self.qformer(image_embeds)
 
         image_tokens = self.proj(q_tokens)
@@ -201,19 +210,20 @@ class VLMModel(nn.Module):
         image_tokens = image_tokens.to(text_embeds.dtype)
 
         inputs_embeds = torch.cat([image_tokens, text_embeds], dim=1)
+        inputs_embeds = self.fusion_norm(inputs_embeds)
 
         image_mask = torch.ones(
             input_ids.size(0),
             image_tokens.size(1),
-            device=input_ids.device,
+            device=device,
             dtype=attention_mask.dtype,
         )
 
         attention_mask = torch.cat([image_mask, attention_mask], dim=1)
 
-        gen_kwargs = {"max_new_tokens": max_new_tokens, **gen_kwargs}
         return self.llm.generate(
             inputs_embeds=inputs_embeds,
             attention_mask=attention_mask,
+            max_new_tokens=max_new_tokens,
             **gen_kwargs,
         )
