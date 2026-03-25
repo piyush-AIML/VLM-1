@@ -1,545 +1,252 @@
-I am building a Vision-Language Model (VLM) from scratch using a modular deep learning pipeline. The goal is to create a mini LLaVA-style architecture that takes an image + text prompt and generates a textual response.
+# 🧠 VLM-1: Vision-Language Model with Q-Former Architecture
 
-## 🧠 PROJECT OVERVIEW
+A modular, scalable implementation of a **Vision-Language Model (VLM)** integrating a pretrained Vision Transformer with a language model via a **Q-Former** architecture.
 
-This project implements a multimodal system combining:
+This project is designed for **multi-task vision-language learning**, including:
 
-- Vision encoder (ViT)
-- Query transformer (Q-Former)
-- Large Language Model (Qwen)
-- Projection layer for modality alignment
-
-The system follows a standard VLM architecture where:
-
-- Image → converted into tokens via ViT
-- Tokens → compressed using Q-Former
-- Projected into LLM embedding space
-- Concatenated with text tokens
-- LLM generates output autoregressively
-
-This aligns with modern VLM design where a vision encoder + LLM are fused via projection or cross-attention. ([Cameron R. Wolfe][1])
+- Visual Question Answering (VQA)
+- Image Captioning
+- Optical Character Recognition (OCR)
 
 ---
 
-## 🏗️ CURRENT ARCHITECTURE
+## 📌 Features
 
-### 1. Vision Encoder
-
-- Model: ViT (google/vit-base-patch16-224)
-- Frozen during training
-- Outputs patch embeddings
-
-### 2. Q-Former
-
-- Transformer encoder with learnable query tokens
-- Extracts relevant visual features
-- Acts as bottleneck between vision and language
-
-### 3. Projection Layer
-
-- Linear layer mapping 768 → LLM hidden size
-- Followed by:
-  - normalization
-  - scaling (×0.1)
-  - clamping (for stability)
-
-### 4. Language Model
-
-- Model: Qwen2 (0.5B)
-- Initially frozen → later LoRA-enabled
-- Takes combined embeddings
-
-### 5. Fusion Strategy
-
-- Early fusion via concatenation:
-  image_tokens + text_embeddings → LLM
+- 🔗 **Q-Former-based architecture** for efficient vision-language alignment
+- 🧩 Modular pipeline (Dataset → Collator → Model → Trainer)
+- 📊 Integrated **Weights & Biases (wandb)** tracking
+- ⚡ Support for large-scale datasets (Hugging Face Arrow format)
+- 🔄 Multi-task training (VQA, OCR, Captioning)
+- 🧪 Debug utilities for pipeline inspection
 
 ---
 
-## 📦 DATA PIPELINE
+## 🏗️ Project Structure
 
-### Dataset
-
-- Source: nvidia/Llama-Nemotron-VLM-Dataset-v1
-- Using splits like:
-  - vqa_1
-  - captioning_1
-
-- Subsampled (1000–20000 samples for experiments)
-
-### Dataset Handling
-
-- Skips corrupted/missing images
-- Returns:
-  {
-  image: PIL.Image,
-  conversation: structured chat
-  }
-
----
-
-## 🧠 COLLATOR DESIGN (CRITICAL)
-
-Key features:
-
-- Uses tokenizer.apply_chat_template() (NOT manual string formatting)
-- Converts conversations into proper LLM chat format
-- Generates:
-  - input_ids
-  - attention_mask
-  - labels
-
-### Label Strategy
-
-- All tokens masked (-100)
-- Only last ~50 tokens (assistant response) unmasked
-
-Goal:
-
-- Train ONLY on assistant outputs
-- Avoid label collapse / NaN
-
----
-
-## ⚙️ TRAINING PIPELINE
-
-### Trainer
-
-- Pure FP32 (NO AMP)
-- Gradient clipping (1.0)
-- NaN detection + skip
-- AdamW optimizer
-
-### Stability Fixes Applied
-
-- Removed AMP (causing NaN)
-- Fixed dtype mismatch (float32 everywhere)
-- Normalized image embeddings
-- Scaled image tokens
-- Clamped embeddings
-- Fixed label masking
-
----
-
-## 📉 TRAINING BEHAVIOR OBSERVED
-
-### Phase 1 (Correct)
-
-Loss:
-5 → 3 → 2 → 1
-
-Meaning:
-✔ model learning
-
----
-
-### Phase 2 (Overfitting)
-
-Loss:
-1 → 0.3 → 0.00005
-
-Meaning:
-❌ model memorizing
-❌ weak training signal
-❌ too few tokens contributing to loss
-
----
-
-## 🚨 CURRENT STATE
-
-✔ Training is stable
-✔ Loss decreases correctly
-✔ No NaN / crashes
-❌ Model overfits quickly
-❌ Loss becomes too small
-❌ Not generalizing yet
-
----
-
-## 🎯 CURRENT GOALS
-
-Next steps:
-
-1. Enable LoRA for efficient fine-tuning
-2. Improve label masking (true assistant-only training)
-3. Increase dataset size/diversity
-4. Add validation + early stopping
-5. Build inference pipeline
-6. Improve multimodal alignment
-
----
-
-## 🧠 KEY LEARNINGS FROM THIS PROJECT
-
-- VLM = vision encoder + LLM + alignment module ([IBM][2])
-- Most failures come from:
-  - bad masking
-  - dtype mismatch
-  - unstable fusion
-
-- Low loss ≠ good model
-- Data quality > architecture complexity
-- Training stability is harder than model design
-
----
-
-## 🧩 EXPECTATIONS FOR NEXT SESSION
-
-When continuing this project:
-
-- Assume pipeline is working and stable
-- Focus on improving model quality, not debugging
-- Prioritize:
-  - LoRA integration
-  - better supervision signals
-  - inference quality
-
----
-
-## 🧠 ROLE OF ASSISTANT
-
-When helping:
-
-- Understand full architecture (ViT + Q-Former + LLM)
-- Suggest improvements at system level, not just code fixes
-- Avoid naive solutions (string tokenization, random masking)
-- Focus on real VLM practices (like LLaVA-style training)
-
----
-
-## 🚀 FINAL CONTEXT
-
-This is not a beginner project.
-
-This is a:
-→ full custom Vision-Language Model training system
-→ built from scratch
-→ currently transitioning from “working” → “useful”
-
-I want to move toward:
-→ real multimodal reasoning
-→ strong VQA / captioning capability
-→ efficient fine-tuning (LoRA)
-
----
-
-Continue from this state without re-explaining basics.
-
-[1]: https://cameronrwolfe.substack.com/p/vision-llms?utm_source=chatgpt.com "Vision Large Language Models (vLLMs)"
-[2]: https://www.ibm.com/think/topics/vision-language-models?utm_source=chatgpt.com "What Are Vision Language Models (VLMs)?"
-
-#----------------------------------------------------------------------------------------------------------------------------------------------
-
-I am building a Vision-Language Model (VLM) from scratch using a modular deep learning pipeline. The goal is to create a mini LLaVA-style architecture that takes an image + text prompt and generates a textual response.
-
----
-
-# 🧠 PROJECT OVERVIEW
-
-This project implements a multimodal system combining:
-
-- Vision encoder (ViT)
-- Query transformer (Q-Former)
-- Large Language Model (Qwen)
-- Projection layer for modality alignment
-
-Pipeline:
-
-Image → ViT → Q-Former → Projection → concat with text → LLM → output
-
----
-
-# 📁 FULL PROJECT STRUCTURE
-
-project/
+```
+VLM-1/
 │
-├── config.py
+├── configs/                # Configuration files
+├── data/                   # Dataset + Collator
+│   ├── dataset.py
+│   └── collator.py
 │
-├── models/
-│ ├── vlm_model.py
-│ └── qformer.py
+├── models/                 # Model architecture
+│   ├── qformer.py
+│   └── vlm_model.py
 │
-├── data/
-│ ├── dataset.py
-│ └── collator.py
+├── training/               # Training pipeline
+│   ├── train.py
+│   └── trainer.py
 │
-├── training/
-│ ├── trainer.py
-│ └── train.py
+├── inference/              # Inference scripts
+│   └── generate.py
 │
-├── inference/
-│ └── generate.py (planned / optional)
+├── evaluation/             # Metrics and evaluation
+│   └── metrics.py
 │
-└── checkpoints/ (model saves)
+├── debug/                  # Debug utilities
+├── checkpoints/            # Saved models
+├── data_cache/             # Hugging Face dataset cache
+└── utils/                  # Misc utilities
+```
 
 ---
 
-# 📦 FILE-BY-FILE EXPLANATION
+## 🧠 Model Architecture
+
+The model follows a **BLIP-2 style pipeline**:
+
+```
+Image → Vision Encoder (ViT)
+        ↓
+     Q-Former
+        ↓
+   Language Model (LLM)
+        ↓
+   Text Output
+```
+
+### Components
+
+- **Vision Encoder**
+  - Extracts image features (patch embeddings)
+
+- **Q-Former**
+  - Learns query tokens to bridge vision and language
+  - Reduces dimensional mismatch
+  - Enables efficient cross-modal attention
+
+- **Language Model**
+  - Generates output (captions, answers, OCR text)
 
 ---
 
-## 🔧 config.py
+## 📊 Supported Tasks
 
-Central configuration file.
-
-Contains:
-
-- model names (ViT, Qwen)
-- hyperparameters (lr, batch size)
-- Q-Former settings
-- training parameters
+| Task       | Description                   |
+| ---------- | ----------------------------- |
+| VQA        | Answer questions about images |
+| Captioning | Generate image descriptions   |
+| OCR        | Extract text from images      |
 
 ---
 
-## 🧠 models/qformer.py
+## 📦 Dataset
 
-Implements Q-Former.
+This project supports multiple datasets via Hugging Face:
 
-Responsibilities:
+- `nvidia/llama-nemotron-vlm-dataset-v1`
+- `howard-hou/OCR-VQA`
 
-- Learnable query tokens
-- Transformer encoder
-- Extract important visual features from ViT output
+Datasets are automatically:
 
-Acts as:
-→ bridge between vision and language
-
----
-
-## 🧠 models/vlm_model.py
-
-Core multimodal model.
-
-Components:
-
-- ViT (frozen)
-- Q-Former (trainable)
-- Projection layer
-- Qwen LLM
-
-Key operations:
-
-- image → embeddings
-- query extraction
-- projection to LLM space
-- concatenation with text embeddings
-- forward pass into LLM
-
-Includes:
-
-- normalization
-- scaling
-- clamping (for stability)
+- Downloaded
+- Cached as `.arrow` files
+- Loaded efficiently using Hugging Face `datasets`
 
 ---
 
-## 📦 data/dataset.py
+## ⚙️ Installation
 
-Loads dataset from:
-→ nvidia/Llama-Nemotron-VLM-Dataset-v1
+```bash
+git clone https://github.com/piyush-AIML/VLM-1.git
+cd VLM-1
 
-Responsibilities:
-
-- load splits (vqa, captioning)
-- filter invalid images
-- return structured data:
-  {
-  image,
-  conversation
-  }
+pip install -r requirements.txt
+```
 
 ---
 
-## 🧠 data/collator.py (CRITICAL)
+## 🔑 Hugging Face Authentication (Recommended)
 
-Most important part for training quality.
+```bash
+hf auth login
+```
 
-Responsibilities:
+Prevents:
 
-- process images → pixel_values
-- tokenize conversations using:
-  tokenizer.apply_chat_template()
-- create:
-  - input_ids
-  - attention_mask
-  - labels
-
-Label logic:
-
-- mask all tokens (-100)
-- unmask only assistant response tokens
-
-Ensures:
-→ correct instruction tuning
+- Rate limits
+- Slow downloads
+- Dataset failures
 
 ---
 
-## ⚙️ training/trainer.py
+## 🚀 Training
 
-Handles training step.
+```bash
+python -m training.train
+```
 
-Responsibilities:
+### Training Features:
 
-- forward pass
-- loss computation
-- backward pass
-- gradient clipping
-- optimizer step
-- NaN handling
-
-Important:
-
-- NO AMP (disabled for stability)
-- FP32 training
+- Gradient tracking
+- Learning rate scheduling
+- WandB logging
+- Checkpoint saving
 
 ---
 
-## 🚀 training/train.py
+## 📈 Monitoring
 
-Entry point.
+Training logs are tracked using **Weights & Biases**:
 
-Responsibilities:
+```bash
+wandb login
+```
 
-- initialize config
-- load dataset + dataloader
-- initialize model
-- optimizer setup
-- training loop
+Track:
 
----
-
-## 🔮 inference/generate.py (planned)
-
-Used for testing model.
-
-Responsibilities:
-
-- load trained model
-- process image + prompt
-- generate output using LLM
+- Loss
+- Gradient norm
+- Learning rate
+- Step time
 
 ---
 
-## 💾 checkpoints/
+## 🧪 Inference
 
-Stores trained weights.
+```bash
+python -m inference.generate
+```
 
----
+Generates:
 
-# 🏗️ MODEL ARCHITECTURE
-
-1. Vision Encoder
-   - ViT (frozen)
-   - outputs patch embeddings
-
-2. Q-Former
-   - learns query tokens
-   - extracts useful visual info
-
-3. Projection Layer
-   - aligns vision → language space
-   - includes normalization + scaling
-
-4. LLM (Qwen)
-   - receives:
-     image tokens + text tokens
-   - generates response
+- Image captions
+- Answers
+- OCR outputs
 
 ---
 
-# 📊 TRAINING PIPELINE
+## 📊 Evaluation
 
-- FP32 only (no mixed precision)
-- gradient clipping
-- NaN batch skipping
-- AdamW optimizer
+```bash
+python -m evaluation.metrics
+```
 
----
+Supports:
 
-# 📉 TRAINING BEHAVIOR OBSERVED
-
-Loss trend:
-
-5 → 3 → 2 → 1 → 0.3 → ~0.00005
-
-Interpretation:
-
-✔ initial learning
-✔ convergence
-❌ overfitting
-❌ weak supervision signal
+- Accuracy
+- Text similarity metrics
 
 ---
 
-# 🚨 CURRENT PROBLEM
+## ⚡ Performance Notes
 
-- Loss becomes too small
-- Model memorizes dataset
-- Not generalizing
-
----
-
-# 🎯 CURRENT GOALS
-
-Next improvements:
-
-1. Add LoRA fine-tuning
-2. Improve masking strategy
-3. Increase dataset size
-4. Add validation + early stopping
-5. Improve inference quality
-6. Better multimodal alignment
+- Use SSD for faster data loading
+- Enable multiple workers in DataLoader
+- Use gradient clipping for stability
 
 ---
 
-# 🧠 KEY INSIGHTS
+## ⚠️ Known Issues
 
-- Low loss ≠ good model
-- Data + labels > architecture
-- Stability is hardest part of VLM
-- Most bugs were:
-  - dtype mismatch
-  - AMP instability
-  - incorrect masking
+- Dataset downloads may fail if interrupted
+- Hugging Face cache corruption possible
+- High gradient spikes during early training
 
 ---
 
-# 🚀 CURRENT STAGE
+## 🛠️ Future Improvements
 
-✔ Stable training system
-✔ Working VLM pipeline
-❌ Needs improvement in generalization
-
----
-
-# 🎯 NEXT SESSION EXPECTATION
-
-Continue from this point.
-
-Focus on:
-
-- improving model quality
-- not debugging basics
+- [ ] Add distributed training (DDP)
+- [ ] Mixed precision training (FP16)
+- [ ] Better dataset balancing strategy
+- [ ] Model checkpoint versioning
+- [ ] Deployment-ready inference API
 
 ---
 
-# 🧠 ASSISTANT ROLE
+## 🤝 Contributing
 
-- Understand full architecture
-- Suggest real VLM improvements
-- Avoid naive fixes
-- Focus on system-level reasoning
+Contributions are welcome!
 
----
-
-# 🚀 FINAL CONTEXT
-
-This is a full custom VLM system.
-
-Goal:
-→ move from “working model”
-→ to “useful intelligent system”
+1. Fork the repo
+2. Create a new branch
+3. Submit a PR
 
 ---
 
-Continue directly without re-explaining basics.
+## 📜 License
+
+MIT License
+
+---
+
+## 👤 Author
+
+**Piyush Ghosal**
+B.Tech CSE (AI & ML)
+MAKAUT University
+
+---
+
+## ⭐ Acknowledgements
+
+Inspired by:
+
+- BLIP / BLIP-2 architectures
+- Hugging Face ecosystem
+- Vision-Language research advancements
+
+---
