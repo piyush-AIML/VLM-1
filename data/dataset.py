@@ -1,144 +1,111 @@
 import logging
-from pathlib import Path
+import random
 
-from datasets import concatenate_datasets, load_dataset
+from datasets import load_dataset
 from torch.utils.data import Dataset
 
-logging.basicConfig(level=logging.INFO)
-
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_DEFAULT_CACHE = _PROJECT_ROOT / "data_cache"
+logger = logging.getLogger(__name__)
 
 
 class VLMDataset(Dataset):
-    def __init__(self, max_samples=20000, seed=42, cache_dir=None):
-        splits = [
-            "vqa_1",
-            "vqa_2",
-            "captioning_1",
-            "ocr_1",
-            "ocr_2",
-            "ocr_3",
-            "ocr_4",
-        ]
+    def __init__(
+        self,
+        split="train",
+        max_samples=5000,
+        seed=42,
+        add_ocr_task=True,
+        ocr_prob=0.3,  # 🔥 control OCR frequency
+    ):
+        self.seed = seed
+        self.add_ocr_task = add_ocr_task
+        self.ocr_prob = ocr_prob
 
-        self._cache = str(cache_dir or _DEFAULT_CACHE)
+        logger.info("🔄 Loading OCR-VQA dataset...")
 
-        logging.info("🔄 Loading datasets...")
-
-        ds_list = [
-            load_dataset(
-                "nvidia/Llama-Nemotron-VLM-Dataset-v1",
-                split=s,
-                verification_mode="no_checks",
-                cache_dir=self._cache,
-            )
-            for s in splits
-        ]
-
-        ds = concatenate_datasets(ds_list)
-        ds = ds.shuffle(seed=seed)
+        self.ds = load_dataset("howard-hou/OCR-VQA", split=split)
 
         if max_samples:
-            ds = ds.select(range(max_samples))
+            self.ds = self.ds.select(range(min(len(self.ds), max_samples)))
 
-        logging.info(f"Raw dataset size: {len(ds)}")
+        self.data = self._flatten(self.ds)
 
-        self.samples = self._build_samples(ds)
+        logger.info(f"✅ Final dataset size: {len(self.data)}")
 
-        logging.info(f"✅ Final usable samples: {len(self.samples)}")
+    # --------------------------------------------------
+    def __len__(self):
+        return len(self.data)
 
-    # ----------------------------
-    # 🔥 PARSER (NO IMAGE LOADING)
-    # ----------------------------
-    def _extract_sample(self, item):
+    # --------------------------------------------------
+    def __getitem__(self, idx):
+        return self.data[idx]
 
-        image = item.get("image", None)  # keep raw
+    # --------------------------------------------------
+    # 🔥 CORE: FLATTEN + NORMALIZE
+    # --------------------------------------------------
+    def _flatten(self, dataset):
+        random.seed(self.seed)
 
-        # ----------------------------
-        # VQA
-        # ----------------------------
-        if "conversations" in item:
-            user, assistant = [], []
+        processed = []
 
-            for turn in item["conversations"]:
-                role = turn.get("role") or turn.get("from")
-                text = turn.get("content") or turn.get("value")
+        for sample in dataset:
+            image = sample["image"]
 
-                if not text:
+            questions = sample.get("questions", [])
+            answers = sample.get("answers", [])
+            ocr_tokens = sample.get("ocr_tokens", [])
+
+            # ----------------------------
+            # ✅ VQA TASK
+            # ----------------------------
+            for q, a in zip(questions, answers):
+                if not q or not a:
                     continue
 
-                text = text.replace("<image>", "").strip()
-
-                if role in ["user", "human"]:
-                    user.append(text)
-                elif role in ["assistant", "gpt"]:
-                    assistant.append(text)
-
-            if user and assistant:
-                return image, " ".join(user), " ".join(assistant)
-
-        # ----------------------------
-        # ALT VQA
-        # ----------------------------
-        if "question" in item and "answer" in item:
-            return image, item["question"], item["answer"]
-
-        # ----------------------------
-        # Caption
-        # ----------------------------
-        if "caption" in item:
-            return image, "Describe the image.", item["caption"]
-
-        # ----------------------------
-        # OCR
-        # ----------------------------
-        for key in ["text", "ocr", "label"]:
-            if key in item and isinstance(item[key], str):
-                return image, "Read the text in the image.", item[key]
-
-        return None, None, None
-
-    # ----------------------------
-    # 🔧 BUILD DATASET
-    # ----------------------------
-    def _build_samples(self, ds):
-        samples = []
-        valid, invalid = 0, 0
-
-        for idx, item in enumerate(ds):
-
-            if idx < 3:
-                logging.debug(
-                    "sample item keys=%s",
-                    list(item.keys()) if hasattr(item, "keys") else type(item),
+                processed.append(
+                    {
+                        "image": image,
+                        "input_text": self._format_vqa(q),
+                        "target_text": self._clean_text(a),
+                    }
                 )
 
-            img, inp, tgt = self._extract_sample(item)
+            # ----------------------------
+            # 🔥 OCR TASK (CONTROLLED)
+            # ----------------------------
+            if self.add_ocr_task and ocr_tokens and random.random() < self.ocr_prob:
+                processed.append(
+                    {
+                        "image": image,
+                        "input_text": "Read all text in the image.",
+                        "target_text": self._format_ocr(ocr_tokens),
+                    }
+                )
 
-            if inp is None or tgt is None:
-                invalid += 1
-                continue
+        return processed
 
-            samples.append(
-                {
-                    "image": img,  # may be string
-                    "input_text": inp,
-                    "target_text": tgt,
-                }
-            )
+    # --------------------------------------------------
+    # 🧠 PROMPT DESIGN (VERY IMPORTANT)
+    # --------------------------------------------------
+    def _format_vqa(self, question):
+        question = question.strip()
 
-            valid += 1
+        # normalize question
+        if not question.endswith("?"):
+            question += "?"
 
-        logging.info(f"Valid: {valid}, Invalid: {invalid}")
+        return f"Question: {question}"
 
-        if len(samples) == 0:
-            raise RuntimeError("No valid samples!")
+    # --------------------------------------------------
+    def _format_ocr(self, tokens):
+        # join OCR tokens cleanly
+        text = " ".join(tokens)
 
-        return samples
+        # remove duplicates (optional improvement)
+        words = text.split()
+        words = list(dict.fromkeys(words))  # preserve order
 
-    def __getitem__(self, idx):
-        return self.samples[idx]
+        return " ".join(words)
 
-    def __len__(self):
-        return len(self.samples)
+    # --------------------------------------------------
+    def _clean_text(self, text):
+        return " ".join(text.strip().split())
